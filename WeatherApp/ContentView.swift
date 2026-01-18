@@ -8,15 +8,36 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-    }
+  @StateObject private var weatherViewModel = WeatherViewModel()
+
+      var body: some View {
+          VStack(spacing: 20) {
+
+              TextField("Enter city", text: $weatherViewModel.city)
+                  .textFieldStyle(.roundedBorder)
+                  .padding()
+                  .onSubmit {
+                      weatherViewModel.fetchWeather()
+                  }
+
+              Button("Search") {
+                  weatherViewModel.fetchWeather()
+              }
+
+              if let weather = weatherViewModel.weather {
+                  Text("Weather in \(weather.name)")
+                      .font(.title)
+
+                  Text("\(Int(weather.main.temp.rounded()))°C")
+                      .font(.system(size: 64, weight: .bold))
+
+                  Text(weather.weather.first?.description.capitalized ?? "")
+                      .font(.title3)
+                      .foregroundColor(.gray)
+              }
+          }
+          .padding()
+      }
 }
 
 #Preview {
